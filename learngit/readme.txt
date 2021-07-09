@@ -8,4 +8,8 @@
 解决冲突！
 >>>>>>> feature1
 修改一下！
+<<<<<<< Updated upstream
 修复bug！
+=======
+未提交的文件！
+>>>>>>> Stashed changes
