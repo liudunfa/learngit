@@ -7,9 +7,10 @@
 =======
 解决冲突！
 >>>>>>> feature1
-修改一下！
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 修复bug！
-=======
-未提交的文件！
 >>>>>>> Stashed changes
+=======
+修复bug！
+>>>>>>> 9213617... 修复bug
