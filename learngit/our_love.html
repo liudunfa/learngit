@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❤️ 我们的恋爱日记 - 从2025年10月8日开始 ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .fixed-date {
+            background: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 30px;
+            margin-top: 15px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+        }
+        
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 20px;
+            animation: float 5s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h2 i {
+            font-size: 1.5rem;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .days-count {
+            font-size: 3rem;
+            color: #ff6b6b;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .anniversary {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff5f5;
+            border-radius: 8px;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-box {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .countdown-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .countdown-label {
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .special-days {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .special-day {
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #ffd1d1;
+            transition: all 0.3s ease;
+        }
+        
+        .special-day.active {
+            background: #ff6b6b;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .special-day.reached {
+            background: #ffebee;
+            border-color: #ff6b6b;
+        }
+        
+        .special-day .day-emoji {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        
+        .special-day .day-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .special-day .day-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .special-day.active .day-desc,
+        .special-day.reached .day-desc {
+            color: white;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .input-field {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            border-color: #ff6b6b;
+            outline: none;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .love-message {
+            text-align: center;
+            margin: 20px 0;
+            font-style: italic;
+            color: #ff6b6b;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .countdown-container {
+                gap: 10px;
+            }
+            
+            .countdown-box {
+                min-width: 70px;
+                padding: 10px;
+            }
+            
+            .countdown-value {
+                font-size: 1.5rem;
+            }
+            
+            .special-days {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💕 我们的恋爱日记 💕</h1>
+            <p class="subtitle">记录我们从2025年10月8日开始的每一个甜蜜瞬间</p>
+            <div class="fixed-date">起始日: 2025年10月8日 ❤️</div>
+            <div class="hearts" id="heartsContainer"></div>
+        </header>
+        
+        <div class="content">
+            <div class="card">
+                <h2><i>💕</i> 我们的恋爱时光</h2>
+                <div class="love-message">
+                    从相遇的那一刻起，每一天都因你而变得特别
+                </div>
+                
+                <div class="result" id="loveDaysResult">
+                    <h3>我们的恋爱天数</h3>
+                    <div class="days-count" id="daysCount">0</div>
+                    <p>从 <strong>2025年10月8日</strong> 开始</p>
+                    
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <p>当前100天周期进度: <span id="progressPercent">0%</span></p>
+                    
+                    <div id="anniversaryMessage" class="anniversary"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i>⏰</i> 重要日子倒计时</h2>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="countdownDate">目标日期</label>
+                        <input type="date" id="countdownDate">
+                    </div>
+                    <div class="input-field">
+                        <label for="countdownName">事件名称</label>
+                        <input type="text" id="countdownName" placeholder="例如：周年纪念日">
+                    </div>
+                </div>
+                <button id="setCountdownBtn">开始倒计时</button>
+                
+                <div class="result" id="countdownResult" style="display: none;">
+                    <h3 id="countdownTitle">倒计时</h3>
+                    <div class="countdown-container" id="countdownContainer">
+                        <div class="countdown-box">
+                            <div class="countdown-value" id="countdownDays">0</div>
+                            <div class="countdown-label">天</div>
+                        </div>
+                        <div class="countdown-box">
+                            <div class="countdown-value" id="countdownHours">0</div>
+                            <div class="countdown-label">小时</div>
+                        </div>
+                        <div class="countdown-box">
+                            <div class="countdown-value" id="countdownMinutes">0</div>
+                            <div class="countdown-label">分钟</div>
+                        </div>
+                        <div class="countdown-box">
+                            <div class="countdown-value" id="countdownSeconds">0</div>
+                            <div class="countdown-label">秒</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i>❤️</i> 我们的纪念日</h2>
+                <div class="special-days" id="specialDays"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>💕 从你开始，没有结束 💕 | 愿我们的爱情天长地久</p>
+        </footer>
+    </div>
+
+    <script>
+        // 创建漂浮的心形
+        function createHearts() {
+            const heartsContainer = document.getElementById('heartsContainer');
+            const heartCount = 15;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                heartsContainer.appendChild(heart);
+            }
+        }
+        
+        // 固定开始日期 - 2025年10月8日
+        const FIXED_START_DATE = new Date(2025, 9, 8); // 月份从0开始，所以9代表10月
+        
+        // 计算恋爱天数
+        function calculateLoveDays() {
+            const now = new Date();
+            const diffTime = now - FIXED_START_DATE;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            // 如果开始日期是未来，则返回0
+            return Math.max(diffDays, 0);
+        }
+        
+        // 显示恋爱天数
+        function displayLoveDays() {
+            const days = calculateLoveDays();
+            
+            document.getElementById('daysCount').textContent = days;
+            
+            // 更新进度条
+            const progress = days % 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = progress + '%';
+            
+            // 显示纪念日信息
+            displayAnniversaryMessage(days);
+            
+            // 更新特殊纪念日状态
+            updateSpecialDaysStatus(days);
+        }
+        
+        // 显示纪念日信息
+        function displayAnniversaryMessage(days) {
+            const messageElement = document.getElementById('anniversaryMessage');
+            let message = '';
+            
+            if (days === 0) {
+                message = '✨ 今天是你们恋爱的第一天！祝你们幸福！';
+            } else if (days === 7) {
+                message = '✨ 一周纪念日！甜蜜的一周！';
+            } else if (days === 30) {
+                message = '✨ 一个月纪念日！继续甜蜜下去！';
+            } else if (days === 100) {
+                message = '✨ 100天纪念日！长长久久！';
+            } else if (days === 365) {
+                message = '✨ 一周年快乐！愿你们永远幸福！';
+            } else if (days === 520) {
+                message = '✨ 520天！我爱你！';
+            } else if (days === 999) {
+                message = '✨ 999天！长长久久！';
+            } else if (days % 100 === 0 && days > 0) {
+                message = `✨ ${days}天纪念日！`;
+            } else {
+                const next100 = Math.ceil(days / 100) * 100;
+                const daysToNext = next100 - days;
+                message = `距离${next100}天纪念日还有${daysToNext}天`;
+            }
+            
+            messageElement.textContent = message;
+        }
+        
+        // 初始化特殊纪念日
+        function initSpecialDays() {
+            const specialDays = [
+                { days: 1, name: '第一天', emoji: '✨', desc: '我们的故事开始了' },
+                { days: 7, name: '一周', emoji: '✨', desc: '甜蜜的第一周' },
+                { days: 30, name: '一个月', emoji: '✨', desc: '第一个月纪念' },
+                { days: 100, name: '一百天', emoji: '✨', desc: '百日纪念' },
+                { days: 365, name: '一周年', emoji: '✨', desc: '第一个周年' },
+                { days: 520, name: '520天', emoji: '✨', desc: '我爱你' },
+                { days: 999, name: '999天', emoji: '✨', desc: '长长久久' },
+                { days: 1314, name: '1314天', emoji: '✨', desc: '一生一世' }
+            ];
+            
+            const container = document.getElementById('specialDays');
+            container.innerHTML = '';
+            
+            specialDays.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'special-day';
+                dayElement.id = `special-day-${day.days}`;
+                dayElement.innerHTML = `
+                    <div class="day-emoji">${day.emoji}</div>
+                    <div class="day-name">${day.days}天 - ${day.name}</div>
+                    <div class="day-desc">${day.desc}</div>
+                `;
+                container.appendChild(dayElement);
+            });
+        }
+        
+        // 更新特殊纪念日状态
+        function updateSpecialDaysStatus(currentDays) {
+            const specialDays = [1, 7, 30, 100, 365, 520, 999, 1314];
+            
+            specialDays.forEach(day => {
+                const dayElement = document.getElementById(`special-day-${day}`);
+                if (dayElement) {
+                    dayElement.classList.remove('active', 'reached');
+                    
+                    if (currentDays === day) {
+                        dayElement.classList.add('active');
+                    } else if (currentDays > day) {
+                        dayElement.classList.add('reached');
+                    }
+                }
+            });
+        }
+        
+        // 倒计时功能
+        function startCountdown() {
+            const countdownDate = document.getElementById('countdownDate').value;
+            const countdownName = document.getElementById('countdownName').value || '重要日子';
+            
+            if (!countdownDate) {
+                alert('请选择目标日期！');
+                return;
+            }
+            
+            const targetDate = new Date(countdownDate);
+            if (isNaN(targetDate.getTime())) {
+                alert('日期无效，请检查后重新选择！');
+                return;
+            }
+            
+            document.getElementById('countdownTitle').textContent = countdownName + ' 倒计时';
+            document.getElementById('countdownResult').style.display = 'block';
+            
+            // 保存到本地存储
+            localStorage.setItem('countdownDate', countdownDate);
+            localStorage.setItem('countdownName', countdownName);
+            
+            // 更新倒计时
+            updateCountdown(targetDate);
+            
+            // 每秒更新一次
+            setInterval(() => {
+                updateCountdown(targetDate);
+            }, 1000);
+        }
+        
+        // 更新倒计时显示
+        function updateCountdown(targetDate) {
+            const now = new Date();
+            const diff = targetDate - now;
+            
+            if (diff <= 0) {
+                document.getElementById('countdownDays').textContent = '0';
+                document.getElementById('countdownHours').textContent = '0';
+                document.getElementById('countdownMinutes').textContent = '0';
+                document.getElementById('countdownSeconds').textContent = '0';
+                
+                const countdownName = document.getElementById('countdownName').value || '重要日子';
+                document.getElementById('countdownTitle').textContent = `${countdownName} 已到达！✨`;
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('countdownDays').textContent = days;
+            document.getElementById('countdownHours').textContent = hours;
+            document.getElementById('countdownMinutes').textContent = minutes;
+            document.getElementById('countdownSeconds').textContent = seconds;
+        }
+        
+        // 从本地存储加载数据
+        function loadFromLocalStorage() {
+            // 加载倒计时
+            const countdownDate = localStorage.getItem('countdownDate');
+            const countdownName = localStorage.getItem('countdownName');
+            if (countdownDate) {
+                document.getElementById('countdownDate').value = countdownDate;
+                if (countdownName) {
+                    document.getElementById('countdownName').value = countdownName;
+                }
+                startCountdown();
+            }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createHearts();
+            initSpecialDays();
+            displayLoveDays();
+            loadFromLocalStorage();
+            
+            document.getElementById('setCountdownBtn').addEventListener('click', startCountdown);
+            
+            // 每天更新天数
+            setInterval(displayLoveDays, 60 * 60 * 1000); // 每小时更新一次
+        });
+    </script>
+</body>
+</html>
