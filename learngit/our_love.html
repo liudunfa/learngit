@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>❤️ 我们的恋爱日记 - 从2025年10月8日开始 ❤️</title>
     <style>
-        /* 原有样式保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -316,6 +315,12 @@
             margin-bottom: 15px;
             border-left: 4px solid #ff6b6b;
             position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .memory-item.editing {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
         }
         
         .memory-date {
@@ -326,12 +331,18 @@
         
         .memory-content {
             color: #555;
+            line-height: 1.5;
         }
         
-        .delete-memory {
+        .memory-actions {
             position: absolute;
             top: 10px;
             right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        
+        .memory-btn {
             background: none;
             border: none;
             color: #ff6b6b;
@@ -343,10 +354,38 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s;
         }
         
-        .delete-memory:hover {
+        .memory-btn:hover {
             background: rgba(255, 107, 107, 0.1);
+            transform: scale(1.1);
+        }
+        
+        .memory-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        
+        .memory-form.active {
+            display: block;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .cancel-btn {
+            background: #6c757d;
+        }
+        
+        .save-btn {
+            background: #28a745;
         }
         
         footer {
@@ -384,6 +423,12 @@
             
             .special-days {
                 grid-template-columns: 1fr;
+            }
+            
+            .memory-actions {
+                position: static;
+                margin-top: 10px;
+                justify-content: flex-end;
             }
         }
     </style>
@@ -704,24 +749,112 @@
             localStorage.setItem('memories', JSON.stringify(memories));
         }
         
+        // 更新记忆记录
+        function updateMemory(id, updatedMemory) {
+            let memories = JSON.parse(localStorage.getItem('memories')) || [];
+            const index = memories.findIndex(memory => memory.id === id);
+            
+            if (index !== -1) {
+                memories[index] = updatedMemory;
+                localStorage.setItem('memories', JSON.stringify(memories));
+                return true;
+            }
+            return false;
+        }
+        
         // 显示记忆记录
         function displayMemory(memory) {
             const container = document.getElementById('memoriesContainer');
             
             const memoryElement = document.createElement('div');
             memoryElement.className = 'memory-item';
+            memoryElement.dataset.id = memory.id;
             memoryElement.innerHTML = `
-                <button class="delete-memory" data-id="${memory.id}">×</button>
                 <div class="memory-date">${formatDate(memory.date)}</div>
                 <div class="memory-content">${memory.content}</div>
+                <div class="memory-actions">
+                    <button class="memory-btn edit-btn" title="编辑">✏️</button>
+                    <button class="memory-btn delete-btn" title="删除">🗑️</button>
+                </div>
+                <div class="memory-form" id="edit-form-${memory.id}">
+                    <div class="input-field">
+                        <label for="edit-date-${memory.id}">日期</label>
+                        <input type="date" id="edit-date-${memory.id}" value="${memory.date}">
+                    </div>
+                    <div class="input-field">
+                        <label for="edit-content-${memory.id}">内容</label>
+                        <textarea id="edit-content-${memory.id}">${memory.content}</textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="cancel-btn" data-id="${memory.id}">取消</button>
+                        <button class="save-btn" data-id="${memory.id}">保存</button>
+                    </div>
+                </div>
             `;
             
             container.appendChild(memoryElement);
             
-            // 添加删除事件
-            memoryElement.querySelector('.delete-memory').addEventListener('click', function() {
+            // 添加事件监听器
+            memoryElement.querySelector('.edit-btn').addEventListener('click', function() {
+                toggleEditForm(memory.id, true);
+            });
+            
+            memoryElement.querySelector('.delete-btn').addEventListener('click', function() {
                 deleteMemory(memory.id, memoryElement);
             });
+            
+            memoryElement.querySelector('.cancel-btn').addEventListener('click', function() {
+                toggleEditForm(memory.id, false);
+            });
+            
+            memoryElement.querySelector('.save-btn').addEventListener('click', function() {
+                saveEditedMemory(memory.id);
+            });
+        }
+        
+        // 切换编辑表单显示/隐藏
+        function toggleEditForm(id, show) {
+            const memoryElement = document.querySelector(`.memory-item[data-id="${id}"]`);
+            const editForm = document.getElementById(`edit-form-${id}`);
+            
+            if (show) {
+                memoryElement.classList.add('editing');
+                editForm.classList.add('active');
+            } else {
+                memoryElement.classList.remove('editing');
+                editForm.classList.remove('active');
+            }
+        }
+        
+        // 保存编辑的记忆
+        function saveEditedMemory(id) {
+            const editDate = document.getElementById(`edit-date-${id}`).value;
+            const editContent = document.getElementById(`edit-content-${id}`).value.trim();
+            
+            if (!editDate || !editContent) {
+                alert('请填写日期和内容！');
+                return;
+            }
+            
+            const updatedMemory = {
+                id: parseInt(id),
+                date: editDate,
+                content: editContent
+            };
+            
+            if (updateMemory(id, updatedMemory)) {
+                // 更新显示
+                const memoryElement = document.querySelector(`.memory-item[data-id="${id}"]`);
+                memoryElement.querySelector('.memory-date').textContent = formatDate(editDate);
+                memoryElement.querySelector('.memory-content').textContent = editContent;
+                
+                // 关闭编辑表单
+                toggleEditForm(id, false);
+                
+                alert('记录已更新！');
+            } else {
+                alert('更新失败，请重试！');
+            }
         }
         
         // 删除记忆记录
@@ -729,7 +862,7 @@
             if (confirm('确定要删除这条记录吗？')) {
                 // 从本地存储删除
                 let memories = JSON.parse(localStorage.getItem('memories')) || [];
-                memories = memories.filter(memory => memory.id !== id);
+                memories = memories.filter(memory => memory.id !== parseInt(id));
                 localStorage.setItem('memories', JSON.stringify(memories));
                 
                 // 从DOM删除
@@ -749,6 +882,8 @@
         // 加载记忆记录
         function loadMemories() {
             const memories = JSON.parse(localStorage.getItem('memories')) || [];
+            // 按日期排序（最新的在前面）
+            memories.sort((a, b) => new Date(b.date) - new Date(a.date));
             memories.forEach(memory => {
                 displayMemory(memory);
             });
