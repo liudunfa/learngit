@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>❤️ 我们的恋爱日记 - 从2025年10月8日开始 ❤️</title>
     <style>
+        /* 原有样式保持不变 */
         * {
             margin: 0;
             padding: 0;
@@ -255,7 +256,7 @@
             font-weight: bold;
         }
         
-        input {
+        input, textarea {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e0e0e0;
@@ -264,9 +265,14 @@
             transition: border-color 0.3s;
         }
         
-        input:focus {
+        input:focus, textarea:focus {
             border-color: #ff6b6b;
             outline: none;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
         }
         
         button {
@@ -285,6 +291,62 @@
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .add-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            padding: 0;
+            margin: 20px auto 0;
+        }
+        
+        .memories-container {
+            margin-top: 20px;
+        }
+        
+        .memory-item {
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6b6b;
+            position: relative;
+        }
+        
+        .memory-date {
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 8px;
+        }
+        
+        .memory-content {
+            color: #555;
+        }
+        
+        .delete-memory {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-memory:hover {
+            background: rgba(255, 107, 107, 0.1);
         }
         
         footer {
@@ -353,6 +415,25 @@
                     <p>当前100天周期进度: <span id="progressPercent">0%</span></p>
                     
                     <div id="anniversaryMessage" class="anniversary"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i>💗</i> 小狗日记</h2>
+                <div class="input-group">
+                    <div class="input-field">
+                        <label for="memoryDate">日期</label>
+                        <input type="date" id="memoryDate">
+                    </div>
+                </div>
+                <div class="input-field">
+                    <label for="memoryContent">记录我们的甜蜜日常</label>
+                    <textarea id="memoryContent" placeholder=""></textarea>
+                </div>
+                <button id="addMemoryBtn">添加记录</button>
+                
+                <div class="memories-container" id="memoriesContainer">
+                    <!-- 记忆记录将在这里显示 -->
                 </div>
             </div>
             
@@ -588,6 +669,91 @@
             document.getElementById('countdownSeconds').textContent = seconds;
         }
         
+        // 记忆记录功能
+        function addMemory() {
+            const memoryDate = document.getElementById('memoryDate').value;
+            const memoryContent = document.getElementById('memoryContent').value.trim();
+            
+            if (!memoryDate || !memoryContent) {
+                alert('请填写日期和内容！');
+                return;
+            }
+            
+            // 创建记忆对象
+            const memory = {
+                id: Date.now(),
+                date: memoryDate,
+                content: memoryContent
+            };
+            
+            // 保存到本地存储
+            saveMemory(memory);
+            
+            // 添加到显示
+            displayMemory(memory);
+            
+            // 清空表单
+            document.getElementById('memoryDate').value = '';
+            document.getElementById('memoryContent').value = '';
+        }
+        
+        // 保存记忆到本地存储
+        function saveMemory(memory) {
+            let memories = JSON.parse(localStorage.getItem('memories')) || [];
+            memories.push(memory);
+            localStorage.setItem('memories', JSON.stringify(memories));
+        }
+        
+        // 显示记忆记录
+        function displayMemory(memory) {
+            const container = document.getElementById('memoriesContainer');
+            
+            const memoryElement = document.createElement('div');
+            memoryElement.className = 'memory-item';
+            memoryElement.innerHTML = `
+                <button class="delete-memory" data-id="${memory.id}">×</button>
+                <div class="memory-date">${formatDate(memory.date)}</div>
+                <div class="memory-content">${memory.content}</div>
+            `;
+            
+            container.appendChild(memoryElement);
+            
+            // 添加删除事件
+            memoryElement.querySelector('.delete-memory').addEventListener('click', function() {
+                deleteMemory(memory.id, memoryElement);
+            });
+        }
+        
+        // 删除记忆记录
+        function deleteMemory(id, element) {
+            if (confirm('确定要删除这条记录吗？')) {
+                // 从本地存储删除
+                let memories = JSON.parse(localStorage.getItem('memories')) || [];
+                memories = memories.filter(memory => memory.id !== id);
+                localStorage.setItem('memories', JSON.stringify(memories));
+                
+                // 从DOM删除
+                element.remove();
+            }
+        }
+        
+        // 格式化日期显示
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            return `${year}年${month}月${day}日`;
+        }
+        
+        // 加载记忆记录
+        function loadMemories() {
+            const memories = JSON.parse(localStorage.getItem('memories')) || [];
+            memories.forEach(memory => {
+                displayMemory(memory);
+            });
+        }
+        
         // 从本地存储加载数据
         function loadFromLocalStorage() {
             // 加载倒计时
@@ -600,6 +766,9 @@
                 }
                 startCountdown();
             }
+            
+            // 加载记忆记录
+            loadMemories();
         }
         
         // 初始化
@@ -609,7 +778,9 @@
             displayLoveDays();
             loadFromLocalStorage();
             
+            // 添加事件监听器
             document.getElementById('setCountdownBtn').addEventListener('click', startCountdown);
+            document.getElementById('addMemoryBtn').addEventListener('click', addMemory);
             
             // 每天更新天数
             setInterval(displayLoveDays, 60 * 60 * 1000); // 每小时更新一次
